@@ -8,10 +8,9 @@ from file_handler.exception import (
 
 
 def main():
-
     new_file_handler = None
     try:
-        new_file_handler = FileHandler("/not_empty", 3, 725)
+        new_file_handler = FileHandler("/valid", 90, 7250)
     except InvalidConnectorError:
         print("Invalid number of connectors provided.")
     except InvalidFileSizeError:
@@ -25,6 +24,8 @@ def main():
         print(f"File error: {e}")
     except IOError as e:
         print(f"IO error: {e}")
+    except AttributeError as e:
+        print(f"object wasn't assign: {e}")
     else:
         print("everything all right. Your file was read")
 
