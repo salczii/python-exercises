@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-from week2.exceptions.ex1.src.file_handler.exception import (
+from .exception import (
     InvalidConnectorError,
     InvalidFileSizeError,
     InvalidFilePathError,
