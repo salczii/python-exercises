@@ -55,9 +55,9 @@ class FileHandler:
         self._max_file_size = max_file_size
 
     def read_content(self):
+        print("content reading in progress", self)
         raise FileNotFoundError("File not found")
-        print("content is reading")
 
     def save_to_file(self):
+        print("saving to file is processing", self)
         raise IOError("There was an error while saving the file")
-        print("content is saved to file")
