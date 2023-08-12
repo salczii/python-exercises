@@ -10,14 +10,16 @@ from file_handler.exception import (
 def main():
     new_file_handler = None
     try:
-        new_file_handler = FileHandler("/valid", 90, 7250)
-    except InvalidConnectorError:
-        print("Invalid number of connectors provided.")
-    except InvalidFileSizeError:
-        print("Invalid file size provided.")
-    except InvalidFilePathError:
-        print("Invalid file path provided.")
+        new_file_handler = FileHandler("/valid", 2, 7250)
+    except InvalidConnectorError as e:
+        print(e)
+    except InvalidFileSizeError as e:
+        print(e)
+    except InvalidFilePathError as e:
+        print(e)
 
+    if new_file_handler is None:
+        return
     try:
         new_file_handler.read_content()
     except FileNotFoundError as e:
@@ -25,7 +27,7 @@ def main():
     except IOError as e:
         print(f"IO error: {e}")
     except AttributeError as e:
-        print(f"object wasn't assign: {e}")
+        print(f"object wasn't assign properly to variable: {e}")
     else:
         print("everything all right. Your file was read")
 
