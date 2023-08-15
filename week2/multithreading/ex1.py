@@ -9,6 +9,19 @@ def generate_number():
     return round(random() * 100)
 
 
+def split_list(data, pieces):
+    chunk_size = len(data) // pieces
+    remain = len(data) % pieces
+
+    result = []
+    starter = 0
+    for i in range(pieces):
+        slicer = starter + chunk_size + (1 if i < remain else 0)
+        result.append(data[starter:slicer])
+        starter = slicer
+    return result
+
+
 def produce_lists(number_of_lists):
     my_list = []
     for i in range(number_of_lists):
@@ -31,29 +44,32 @@ def bubble_sort(arr):
     return arr
 
 
-def sort_half_list(half_list):
-    for i in range(len(half_list)):
-        half_list[i] = bubble_sort(half_list[i])
-    return half_list
+def sort_chunk_list(chunk_list):
+    for i in range(len(chunk_list)):
+        chunk_list[i] = bubble_sort(chunk_list[i])
+    return chunk_list
 
 
-def calculate_concurrency(first_half, second_half):
-    t1 = Thread(target=sort_half_list, args=[first_half])
-    t2 = Thread(target=sort_half_list, args=[second_half])
+def calculate_concurrency(nested_list, N):
+    splited_list = split_list(nested_list, N)
+    results = []
+    for i, arr in enumerate(splited_list):
+        results.append(Thread(target=sort_chunk_list, args=[arr]))
     start = time.time()
-    t1.start()
-    t2.start()
-    t1.join()
-    t2.join()
+    for result in results:
+        result.start()
+    for result in results:
+        result.join()
     end = time.time()
     return end - start
 
 
-def calculate_parallel(first_half, second_half):
-    pool = Pool(processes=2)
+def calculate_parallel(nested_list, n):
+    pool = Pool(processes=n)
+    splited_list = split_list(nested_list, n)
     start = time.time()
-    p1 = pool.apply_async(sort_half_list, [first_half])
-    p2 = pool.apply_async(sort_half_list, [second_half])
+    for i, arr in enumerate(splited_list):
+        pool.apply_async(sort_chunk_list, [arr])
     pool.close()
     pool.join()
     end = time.time()
@@ -61,13 +77,10 @@ def calculate_parallel(first_half, second_half):
 
 
 def main():
-    nested_list = produce_lists(1000)
-    mid_idx = round(len(nested_list) / 2)
-    first_half = nested_list[:mid_idx]
-    second_half = nested_list[mid_idx:]
+    nested_list = produce_lists(20000)
 
-    concurrency_time = calculate_concurrency(first_half, second_half)
-    parallel_time = calculate_parallel(first_half, second_half)
+    concurrency_time = calculate_concurrency(nested_list, 2)
+    parallel_time = calculate_parallel(nested_list, 2)
 
     print(f"Time taken using threading module: {concurrency_time}")
     print(f"Time taken using multiprocessing module: {parallel_time}")
